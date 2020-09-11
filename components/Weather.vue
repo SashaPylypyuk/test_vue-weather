@@ -85,6 +85,11 @@ export default {
       savedCity: []
     }
   },
+  watch: {
+    text () {
+      this.saveCityFromFile(this.text)
+    }
+  },
   mounted () {
     if (localStorage.savedCity) {
       const cities = JSON.parse(localStorage.savedCity)
@@ -94,46 +99,24 @@ export default {
       this.cityNameSaved = this.savedCity[0].cityName
       this.city = this.savedCity[0].cityName
     }
-    // axios
-    //   .get(`https://api.opencagedata.com/geocode/v1/json?q=${this.city}&key=3e7edb89ef3c432aa5bb001c4d4e70d2`)
-    //   .then(res => (this.geometry = res.data.results[0].geometry))
-    // axios
-    //   .get(`https://api.openweathermap.org/data/2.5/onecall?lat=${this.cordin.lat}&lon=${this.cordin.lng}&exclude=daily
-    //        &units=metric&appid=15b2238ad35774d2a7d5a9f658ca6fdc`)
-    //   .then(res => (this.time = this.editingArray(res.data.hourly)))
-
     axios
       .get(`https://api.openweathermap.org/data/2.5/weather?q=${this.city}&units=metric&appid=15b2238ad35774d2a7d5a9f658ca6fdc`)
       .then(res => (this.info = res.data.main))
   },
   methods: {
     findCity () {
-      // await axios
-      //   .get(`https://api.opencagedata.com/geocode/v1/json?q=${this.city}&key=3e7edb89ef3c432aa5bb001c4d4e70d2`)
-      //   .then(res => (this.cordin = res.data.results[0].geometry))
-
-      // await axios
-      //   .get(`https://api.openweathermap.org/data/2.5/onecall?lat=${this.cordin.lat}&lon=${this.cordin.lng}&exclude=daily
-      //        &units=metric&appid=15b2238ad35774d2a7d5a9f658ca6fdc`)
-      //   .then(res => (this.time = this.editingArray(res.data.hourly)))
-
       axios
         .get(`https://api.openweathermap.org/data/2.5/weather?q=${this.city}&units=metric&appid=15b2238ad35774d2a7d5a9f658ca6fdc`)
         .then(res => (this.info = res.data.main))
 
       this.cityNameSaved = this.city
     },
-    errorHandling () {
-      alert('pleace input correct city')
-    },
-    editingArray (arr) {
-      return arr.slice(0, 24)
-    },
     saveCity () {
       const city = {
         cityName: this.city,
         info: this.info
       }
+
       if (this.savedCity.filter(cit => cit.cityName.toLowerCase() === city.cityName.toLowerCase())[0]) {
         alert('В нас вже є це місто')
       } else {
@@ -142,13 +125,13 @@ export default {
       }
     },
     saveCityFromFile (obj) {
-      console.log(obj)
       if (obj.length > 1) {
         obj.map((city) => {
           const cities = {
             cityName: city.cityName,
             info: city.info
           }
+
           if (this.savedCity.filter(c => c.cityName.toLowerCase() === cities.cityName.toLowerCase())[0]) {
             alert('Частина з данних в нас вже є')
           } else {
@@ -161,6 +144,7 @@ export default {
           cityName: obj[0].cityName,
           info: obj[0].info
         }
+
         if (this.savedCity.filter(cit => cit.cityName.toLowerCase() === city.cityName.toLowerCase())[0]) {
           alert('Ми вже маємо такі данні')
         } else {
@@ -168,11 +152,10 @@ export default {
           localStorage.savedCity = JSON.stringify(this.savedCity)
         }
       }
-
-      console.log(this.savedCity)
     },
     fromSavedCity (name) {
       const city = this.savedCity.filter(city => city.cityName === name)[0]
+
       if (city.cityName !== '') {
         axios
           .get(`https://api.openweathermap.org/data/2.5/weather?q=${city.cityName}&units=metric&appid=15b2238ad35774d2a7d5a9f658ca6fdc`)
@@ -180,13 +163,11 @@ export default {
           .catch(e => this.errorHandling())
       }
       this.city = city.cityName
-      // this.time = city.time
-      // this.cordin = city.cordin
       this.cityNameSaved = this.city
     },
     deleteCity (name) {
-      // const city = this.savedCity.filter(city => city.cityName === name)
       const index = this.savedCity.findIndex(city => city.cityName === name)
+
       if (index > -1) {
         this.savedCity.splice(index, 1)
         localStorage.savedCity = JSON.stringify(this.savedCity)
@@ -202,22 +183,20 @@ export default {
         this.text = JSON.parse(e.target.result)
       }
       reader.onerror = () => {
-        console.log('error')
         reader.abort()
       }
       reader.readAsText(blob)
     },
     downloadFile () {
-      const blob = new Blob([JSON.stringify(this.savedCity)])
-      const link = document.createElement('a')
-      link.href = window.URL.createObjectURL(blob)
-      link.download = 'weather.json'
-      link.click()
-    }
-  },
-  watch: {
-    text () {
-      this.saveCityFromFile(this.text)
+      if (this.savedCity.length > 0) {
+        const blob = new Blob([JSON.stringify(this.savedCity)])
+        const link = document.createElement('a')
+        link.href = window.URL.createObjectURL(blob)
+        link.download = 'weather.json'
+        link.click()
+      } else {
+        alert('Спочатку збережіть місто')
+      }
     }
   }
 }
