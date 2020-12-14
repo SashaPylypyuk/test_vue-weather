@@ -1,5 +1,3 @@
-import colors from 'vuetify/es5/util/colors'
-
 export default {
   /*
   ** Nuxt rendering mode
@@ -21,22 +19,24 @@ export default {
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: process.env.npm_package_description || '' }
+      { hid: 'description', name: 'description', content: process.env.npm_package_description || '' },
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
-    ]
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+    ],
   },
   /*
   ** Global CSS
   */
   css: [
+    '~assets/scss/variables.scss',
   ],
   /*
   ** Plugins to load before mounting the App
   ** https://nuxtjs.org/guide/plugins
   */
   plugins: [
+    '@/plugins/vue-treeselect',
   ],
   /*
   ** Auto import components
@@ -51,38 +51,20 @@ export default {
     '@nuxtjs/eslint-module',
     // Doc: https://github.com/nuxt-community/stylelint-module
     '@nuxtjs/stylelint-module',
-    '@nuxtjs/vuetify'
   ],
+  styleResources: {
+    scss: ['./assets/scss/*.scss'],
+  },
   /*
   ** Nuxt.js modules
   */
   modules: [
+    '@nuxtjs/style-resources',
   ],
-  /*
-  ** vuetify module configuration
-  ** https://github.com/nuxt-community/vuetify-module
-  */
-  vuetify: {
-    customVariables: ['~/assets/variables.scss'],
-    theme: {
-      light: true,
-      themes: {
-        light: {
-          primary: '#03a9f4',
-          secondary: '#8bc34a',
-          accent: '#4caf50',
-          error: '#f44336',
-          warning: '#ffeb3b',
-          info: '#ff5722',
-          success: '#607d8b'
-        }
-      }
-    }
-  },
   /*
   ** Build configuration
   ** See https://nuxtjs.org/api/configuration-build/
   */
   build: {
-  }
-}
+  },
+};
